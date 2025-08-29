@@ -1,6 +1,7 @@
 package org.example.expert.config;
 
 import org.example.expert.domain.auth.exception.AuthException;
+import org.example.expert.domain.common.consts.Const;
 import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.common.exception.ServerException;
 import org.springframework.http.HttpStatus;
@@ -34,9 +35,9 @@ public class GlobalExceptionHandler {
 
     public ResponseEntity<Map<String, Object>> getErrorResponse(HttpStatus status, String message) {
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("status", status.name());
-        errorResponse.put("code", status.value());
-        errorResponse.put("message", message);
+        errorResponse.put(Const.STATUS, status.name());
+        errorResponse.put(Const.CODE, status.value());
+        errorResponse.put(Const.MESSAGE, message);
 
         return new ResponseEntity<>(errorResponse, status);
     }

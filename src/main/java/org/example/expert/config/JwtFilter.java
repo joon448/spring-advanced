@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.expert.domain.common.consts.Const;
 import org.example.expert.domain.user.enums.UserRole;
 import org.springframework.http.HttpStatus;
 
@@ -36,7 +37,7 @@ public class JwtFilter implements Filter {
             return;
         }
 
-        String bearerJwt = httpRequest.getHeader("Authorization");
+        String bearerJwt = httpRequest.getHeader(Const.AUTHORIZATION);
 
         if (bearerJwt == null) {
             log.warn("인증 헤더 누락: URI={}", url);
@@ -55,11 +56,11 @@ public class JwtFilter implements Filter {
                 return;
             }
 
-            UserRole userRole = UserRole.valueOf(claims.get("userRole", String.class));
+            UserRole userRole = UserRole.valueOf(claims.get(Const.USERROLE, String.class));
 
-            httpRequest.setAttribute("userId", Long.parseLong(claims.getSubject()));
-            httpRequest.setAttribute("email", claims.get("email"));
-            httpRequest.setAttribute("userRole", claims.get("userRole"));
+            httpRequest.setAttribute(Const.USERID, Long.parseLong(claims.getSubject()));
+            httpRequest.setAttribute(Const.EMAIL, claims.get(Const.EMAIL));
+            httpRequest.setAttribute(Const.USERROLE, claims.get(Const.USERROLE));
 
             if (url.startsWith("/admin") && !UserRole.ADMIN.equals(userRole)) {
                 log.warn("권한 부족: userId={}, role={}, URI={}", claims.getSubject(), userRole, url);
@@ -82,12 +83,12 @@ public class JwtFilter implements Filter {
 
     private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
         response.setStatus(status.value());
-        response.setContentType("application/json;charset=UTF-8");
+        response.setContentType(Const.JSON_CONTENT_TYPE);
 
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("status", status.name());
-        errorResponse.put("code", status.value());
-        errorResponse.put("message", message);
+        errorResponse.put(Const.STATUS, status.name());
+        errorResponse.put(Const.CODE, status.value());
+        errorResponse.put(Const.MESSAGE, message);
 
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
