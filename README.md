@@ -54,7 +54,7 @@
 ## 📌 Level 7. 테스트 코드 작성
 - 서비스/리포지토리 단위 테스트
 - Validation 및 예외 케이스 테스트
-<img width="500" height="180" alt="image" src="https://github.com/user-attachments/assets/6855a3f2-5175-40ca-bc14-67590a474edf" />
+<img width="500" height="270" alt="image" src="https://github.com/user-attachments/assets/32c68de3-6021-4473-90d0-bd7b3d0415a9" />
 
 ---
 
