@@ -41,7 +41,7 @@ public class AdminLoggerAspect {
     public Object aroundAdmin(ProceedingJoinPoint joinPoint) throws Throwable {
         // 요청 사용자 ID, 요청 시각, 요청 URL, 요청 본문, 응답 본문
         Long userId = (Long) request.getAttribute(Const.USERID);
-        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(Const.DATETIME_FORMAT));
         String requestUrl = request.getRequestURI();
         String requestMethod = request.getMethod();
         String requestBody = extractRequestBody(joinPoint);

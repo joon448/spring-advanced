@@ -1,8 +1,9 @@
 package org.example.expert.domain.common.exception;
 
-public class ServerException extends RuntimeException {
+import org.example.expert.domain.common.exception.errorcode.ErrorCode;
 
-    public ServerException(String message) {
-        super(message);
+public class ServerException extends GlobalException {
+    public ServerException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }

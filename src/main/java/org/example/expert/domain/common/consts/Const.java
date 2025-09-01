@@ -10,6 +10,8 @@ public abstract class Const {
     public static final String MESSAGE = "message";
 
     public static final String JSON_CONTENT_TYPE = "application/json;charset=UTF-8";
+    public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static final String AUTHORIZATION = "Authorization";
+
 }

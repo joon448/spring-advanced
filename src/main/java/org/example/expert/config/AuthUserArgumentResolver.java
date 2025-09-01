@@ -5,14 +5,17 @@ import org.example.expert.domain.auth.exception.AuthException;
 import org.example.expert.domain.common.annotation.Auth;
 import org.example.expert.domain.common.consts.Const;
 import org.example.expert.domain.common.dto.AuthUser;
+import org.example.expert.domain.common.exception.errorcode.AuthErrorCode;
 import org.example.expert.domain.user.enums.UserRole;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@Component
 public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
@@ -22,7 +25,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
         // @Auth 어노테이션과 AuthUser 타입이 함께 사용되지 않은 경우 예외 발생
         if (hasAuthAnnotation != isAuthUserType) {
-            throw new AuthException("@Auth와 AuthUser 타입은 함께 사용되어야 합니다.");
+            throw new AuthException(AuthErrorCode.AUTH_INVALID_TYPE);
         }
 
         return hasAuthAnnotation;

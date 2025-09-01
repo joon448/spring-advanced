@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.expert.config.JwtUtil;
 import org.example.expert.domain.common.annotation.Auth;
+import org.example.expert.domain.common.consts.Const;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.manager.dto.request.ManagerSaveRequest;
 import org.example.expert.domain.manager.dto.response.ManagerResponse;
@@ -38,7 +39,7 @@ public class ManagerController {
 
     @DeleteMapping("/todos/{todoId}/managers/{managerId}")
     public void deleteManager(
-            @RequestHeader("Authorization") String bearerToken,
+            @RequestHeader(Const.AUTHORIZATION) String bearerToken,
             @PathVariable long todoId,
             @PathVariable long managerId
     ) {

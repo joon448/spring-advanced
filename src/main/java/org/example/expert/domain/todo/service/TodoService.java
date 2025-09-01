@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.expert.client.WeatherClient;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.exception.InvalidRequestException;
+import org.example.expert.domain.common.exception.errorcode.TodoErrorCode;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
@@ -67,7 +68,7 @@ public class TodoService {
     @Transactional(readOnly = true)
     public TodoResponse getTodo(long todoId) {
         Todo todo = todoRepository.findByIdWithUser(todoId)
-                .orElseThrow(() -> new InvalidRequestException("Todo not found"));
+                .orElseThrow(() -> new InvalidRequestException(TodoErrorCode.TODO_NOT_FOUND));
 
         User user = todo.getUser();
 
