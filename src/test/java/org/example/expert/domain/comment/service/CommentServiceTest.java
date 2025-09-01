@@ -13,6 +13,7 @@ import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.enums.UserRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,7 +30,8 @@ class CommentServiceTest {
 
     @Mock
     private CommentRepository commentRepository;
-    @Mock
+    // default method 실제 구현 실행을 위해 CALLS_REAL_METHODS 사용
+    @Mock (answer = Answers.CALLS_REAL_METHODS)
     private TodoRepository todoRepository;
     @InjectMocks
     private CommentService commentService;
