@@ -2,6 +2,7 @@ package org.example.expert.domain.manager.service;
 
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.exception.InvalidRequestException;
+import org.example.expert.domain.common.exception.errorcode.TodoErrorCode;
 import org.example.expert.domain.manager.dto.request.ManagerSaveRequest;
 import org.example.expert.domain.manager.dto.response.ManagerResponse;
 import org.example.expert.domain.manager.dto.response.ManagerSaveResponse;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ManagerServiceTest {
@@ -34,8 +36,7 @@ class ManagerServiceTest {
     private ManagerRepository managerRepository;
     @Mock
     private UserRepository userRepository;
-    // default method 실제 구현 실행을 위해 CALLS_REAL_METHODS 사용
-    @Mock(answer = Answers.CALLS_REAL_METHODS)
+    @Mock
     private TodoRepository todoRepository;
     @InjectMocks
     private ManagerService managerService;
@@ -44,7 +45,8 @@ class ManagerServiceTest {
     public void manager_목록_조회_시_Todo가_없다면_InvalidRequestException_에러를_던진다() {
         // given
         long todoId = 1L;
-        given(todoRepository.findById(todoId)).willReturn(Optional.empty());
+        given(todoRepository.findByIdOrElseThrow(todoId))
+                .willThrow(new InvalidRequestException(TodoErrorCode.TODO_NOT_FOUND));
 
         // when & then
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () -> managerService.getManagers(todoId));
@@ -63,7 +65,7 @@ class ManagerServiceTest {
 
         ManagerSaveRequest managerSaveRequest = new ManagerSaveRequest(managerUserId);
 
-        given(todoRepository.findById(todoId)).willReturn(Optional.of(todo));
+        given(todoRepository.findByIdOrElseThrow(todoId)).willReturn(todo);
 
         // when & then
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
@@ -84,7 +86,7 @@ class ManagerServiceTest {
         Manager mockManager = new Manager(todo.getUser(), todo);
         List<Manager> managerList = List.of(mockManager);
 
-        given(todoRepository.findById(todoId)).willReturn(Optional.of(todo));
+        given(todoRepository.findByIdOrElseThrow(todoId)).willReturn(todo);
         given(managerRepository.findByTodoIdWithUser(todoId)).willReturn(managerList);
 
         // when
@@ -97,7 +99,7 @@ class ManagerServiceTest {
     }
 
     @Test // 테스트코드 샘플
-    void todo가_정상적으로_등록된다() {
+    void Manager가_정상적으로_등록된다() {
         // given
         AuthUser authUser = new AuthUser(1L, "a@a.com", UserRole.USER);
         User user = User.fromAuthUser(authUser);  // 일정을 만든 유저
@@ -111,7 +113,7 @@ class ManagerServiceTest {
 
         ManagerSaveRequest managerSaveRequest = new ManagerSaveRequest(managerUserId); // request dto 생성
 
-        given(todoRepository.findById(todoId)).willReturn(Optional.of(todo));
+        given(todoRepository.findByIdOrElseThrow(todoId)).willReturn(todo);
         given(userRepository.findById(managerUserId)).willReturn(Optional.of(managerUser));
         given(managerRepository.save(any(Manager.class))).willAnswer(invocation -> invocation.getArgument(0));
 
@@ -122,5 +124,28 @@ class ManagerServiceTest {
         assertNotNull(response);
         assertEquals(managerUser.getId(), response.getUser().getId());
         assertEquals(managerUser.getEmail(), response.getUser().getEmail());
+    }
+
+    @Test
+    void Manager가_정상적으로_삭제된다() {
+        long userId = 1L, todoId = 10L, managerId = 100L;
+        User owner = new User();
+        ReflectionTestUtils.setField(owner, "id", userId);
+        ReflectionTestUtils.setField(owner, "email", "owner@test.com");
+        Todo todo = new Todo();
+        ReflectionTestUtils.setField(todo, "id", todoId);
+        ReflectionTestUtils.setField(todo, "user", owner);
+        User managerUser = new User();
+        ReflectionTestUtils.setField(managerUser, "id", 2L);
+        ReflectionTestUtils.setField(managerUser, "email", "manager@test.com");
+        Manager manager = new Manager(managerUser, todo);
+        ReflectionTestUtils.setField(manager, "id", managerId);
+
+        given(userRepository.findByIdOrElseThrow(userId)).willReturn(owner);
+        given(todoRepository.findByIdOrElseThrow(todoId)).willReturn(todo);
+        given(managerRepository.findByIdOrElseThrow(managerId)).willReturn(manager);
+
+        // when & then
+        assertDoesNotThrow(() -> managerService.deleteManager(userId, todoId, managerId));
     }
 }
